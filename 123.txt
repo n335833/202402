@@ -1,0 +1,24 @@
+Function ChangeADPConnection(strServerName As String, strDBName As _
+   String, Optional strUN As String, Optional strPW As String) As Boolean
+Dim strConnect As String
+On Error GoTo EH:
+Application.CurrentProject.CloseConnection
+'The Provider, Data Source, and Initial Catalog arguments are required.
+strConnect = "Provider=SQLOLEDB.1" & _
+";Data Source=" & strServerName & _
+";Initial Catalog=" & strDBName
+If strUN <> "" Then
+    strConnect = strConnect & ";user id=" & strUN
+    If strPW <> "" Then
+        strConnect = strConnect & ";password=" & strPW
+    End If
+Else  'Try to use integrated security if no username is supplied.
+    strConnect = strConnect & ";integrated security=SSPI"
+End If
+Application.CurrentProject.OpenConnection strConnect
+ChangeADPConnection = True
+Exit Function
+EH:
+MsgBox Err.Number & ": " & Err.Description, vbCritical, "Connection Error"
+ChangeADPConnection = False
+End Function
